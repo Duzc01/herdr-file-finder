@@ -9,8 +9,6 @@
 Markdown 走 Warp 的原生渲染视图，代码/文本走内置编辑器。打开动作只是一行
 配置，随时可换成 VS Code、Cursor、`$EDITOR` 或任意命令。
 
-<!-- TODO: 效果图（弹窗截图 + 打开后的编辑器截图） -->
-
 ![screenshot](docs/screenshot.png)
 
 ## 特性

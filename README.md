@@ -10,8 +10,6 @@ which routes it by file type in a new tab — Markdown in Warp's rendered
 notebook viewer, code/text in its built-in editor. Everything about the open
 action is a one-line config: VS Code, Cursor, your `$EDITOR`, any command.
 
-<!-- TODO: screenshots (finder popup + resulting editor tab) -->
-
 ![screenshot](docs/screenshot.png)
 
 ## Features
