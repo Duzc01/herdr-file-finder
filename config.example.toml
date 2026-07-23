@@ -1,0 +1,36 @@
+# herdr-file-finder example configuration
+# =============================================================================
+#
+# Copy this file to the plugin config dir as `config.toml`:
+#
+#   ~/.config/herdr/plugins/config/herdr-file-finder/config.toml
+#
+# (`herdr plugin config-dir herdr-file-finder` prints the directory.)
+# The whole file is optional — with no config file the default open action
+# (first entry below) is used. Format: a single-line TOML string; prefer
+# SINGLE-quoted literal strings since templates contain double quotes.
+
+# What to do with the selected file. A command template run via `bash -c`;
+# placeholders are substituted before execution:
+#
+#   {uri}  — percent-encoded absolute path (for warp:// URIs)
+#   {path} — raw absolute path         (quote it: "{path}")
+#   {dir}  — containing directory of the selected file
+#
+# Default (same behavior you get with no config file): open in a NEW WARP TAB,
+# routed by file type — Markdown → Warp's rendered viewer, code/text → Warp's
+# built-in editor:
+#open = 'open "warp://action/new_tab?path={uri}"'
+#
+# Warp's built-in editor directly (supports an optional &line=N jump):
+#open = 'open "warp://action/open_file_editor?path={uri}"'
+#
+# VS Code / Cursor:
+#open = 'code "{path}"'
+#open = 'cursor "{path}"'
+#
+# macOS default app for the file type:
+#open = 'open "{path}"'
+#
+# Just print the path (e.g. for debugging your template):
+#open = 'printf "%s\n" "{path}"; read -r _'

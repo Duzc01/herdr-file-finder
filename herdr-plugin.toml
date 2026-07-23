@@ -1,0 +1,32 @@
+# herdr-plugin.toml — manifest for the herdr-file-finder plugin.
+#
+# An overlay fuzzy finder: pick a file under the current directory (fd + fzf),
+# then hand it to Warp itself (`warp://action/new_tab?path=…`) — Markdown opens
+# in Warp's rendered viewer, code/text in its built-in editor. macOS only (the
+# `open` command and Warp URI scheme are macOS-specific).
+
+id = "herdr-file-finder"
+name = "herdr-file-finder"
+version = "0.1.0"
+description = "Fuzzy-find a file under the current directory in an overlay; open it in a new Warp tab."
+min_herdr_version = "0.7.0"
+platforms = ["macos"]
+
+# The finder overlay. herdr injects HERDR_PLUGIN_CONTEXT_JSON; the launcher passes
+# the focused pane's cwd via --cwd so the search roots where the user is working.
+# The entrypoint resolves the script by absolute path under the plugin root,
+# since the pane's cwd is the user's working directory (not the plugin root).
+[[panes]]
+id = "file-finder"
+title = "Find File"
+placement = "popup"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/src/finder.sh\""]
+
+# The action that summons the overlay (bound to a keybinding in herdr config).
+# This is the only way the finder is opened — no event hooks.
+[[actions]]
+id = "find-file"
+platforms = ["macos"]
+title = "Find file and open in Warp tab"
+description = "Open an overlay fuzzy finder; open the selected file in a new Warp tab."
+command = ["bash", "src/open-file-finder.sh"]
