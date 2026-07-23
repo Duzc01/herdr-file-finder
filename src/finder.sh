@@ -60,12 +60,12 @@ cfg_lookup() {
     k=${trimmed%%=*}; v=${trimmed#*=}
     k=${k#"${k%%[![:space:]]*}"}; k=${k%"${k##*[![:space:]]}"}
     [ "$k" = "$want_key" ] || continue
-    v=${v#"${v%%[![:space:]]*}"}; v=${v%"${v##*[![:space:]]}"}
-    if [[ $v == \'*\' ]]; then
-      v=${v#\'}; v=${v%\'}
-    elif [[ $v == \"*\" ]]; then
-      v=${v#\"}; v=${v%\"}; v=${v//\\\"/\"}; v=${v//\\\\/\\}
-    fi
+    v=${v#"${v%%[![:space:]]*}"}                       # left-trim
+    case $v in
+      \'*) v=${v#\'}; v=${v%%\'*} ;;                    # single-quoted literal
+      \"*) v=${v#\"}; v=${v%\"*}; v=${v//\\\"/\"}; v=${v//\\\\/\\} ;;  # double-quoted
+      *)   v=${v%%#*}; v=${v%"${v##*[![:space:]]}"} ;;  # bare: drop inline comment + right-trim
+    esac
     printf '%s' "$v"; return 0
   done < "$file"
   return 1
