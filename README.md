@@ -33,8 +33,8 @@ three are required.
 ## Installation
 
 ```bash
-# 1. Link the plugin into herdr (a link, not a copy — edits take effect immediately)
-herdr plugin link /path/to/herdr-file-finder
+# 1. Install straight from GitHub (clones and pins to a commit)
+herdr plugin install Duzc01/herdr-file-finder
 ```
 
 2. Bind a hotkey in `~/.config/herdr/config.toml` (append):
@@ -47,6 +47,15 @@ command = "herdr plugin action invoke find-file --plugin herdr-file-finder"
 ```
 
 Verify: `herdr plugin list` should show `herdr-file-finder … enabled`.
+
+### Develop locally
+
+To hack on the plugin, link a local checkout instead of installing from GitHub
+(a link, not a copy — edits take effect immediately):
+
+```bash
+herdr plugin link /path/to/herdr-file-finder
+```
 
 ## Usage
 

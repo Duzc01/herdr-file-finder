@@ -30,8 +30,8 @@ brew install fd fzf jq bat
 ## 安装
 
 ```bash
-# 1. 克隆/放置插件目录后，链接进 herdr（link 是引用而非拷贝，改文件即生效）
-herdr plugin link /path/to/herdr-file-finder
+# 1. 直接从 GitHub 安装（克隆并锁定到某个 commit）
+herdr plugin install Duzc01/herdr-file-finder
 ```
 
 2. 在 `~/.config/herdr/config.toml` 中绑定快捷键（追加）：
@@ -44,6 +44,14 @@ command = "herdr plugin action invoke find-file --plugin herdr-file-finder"
 ```
 
 验证：`herdr plugin list` 应显示 `herdr-file-finder … enabled`。
+
+### 本地开发
+
+想改插件代码时，用本地目录 link（引用而非拷贝，改文件即生效），而不是从 GitHub 安装：
+
+```bash
+herdr plugin link /path/to/herdr-file-finder
+```
 
 ## 使用
 
