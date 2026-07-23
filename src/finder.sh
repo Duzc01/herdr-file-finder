@@ -35,20 +35,52 @@ encoded=$(jq -rn --arg p "$abs" '$p | @uri') || exit 1
 # The open action is a command template from the plugin config (trusted,
 # operator-configured — same contract as herdr-file-viewer's `markdown` key):
 #   ~/.config/herdr/plugins/config/herdr-file-finder/config.toml
-#     open = 'open "warp://action/new_tab?path={uri}"'
+# Two levels, most specific wins:
+#   [open_by_ext]  per-extension templates, e.g.  html = 'open "{path}"'
+#   open = '…'     the fallback template for any other extension
 # Placeholders: {uri} = percent-encoded absolute path, {path} = raw absolute
 # path, {dir} = containing directory. Single-line TOML string only; a
 # single-quoted literal string is preferred (templates contain `"` themselves).
+
+# cfg_lookup <file> <section> <key> — print the (unquoted) value, or nothing.
+# section="" matches top-level keys (those before any [header]).
+cfg_lookup() {
+  local file=$1 want_section=$2 want_key=$3 cur_section="" line trimmed k v
+  while IFS= read -r line || [ -n "$line" ]; do
+    trimmed=${line#"${line%%[![:space:]]*}"}
+    case "$trimmed" in ''|'#'*) continue ;; esac
+    if [[ $trimmed == '['*']'* ]]; then
+      cur_section=${trimmed#\[}; cur_section=${cur_section%%\]*}
+      cur_section=${cur_section#"${cur_section%%[![:space:]]*}"}
+      cur_section=${cur_section%"${cur_section##*[![:space:]]}"}
+      continue
+    fi
+    [ "$cur_section" = "$want_section" ] || continue
+    [[ $trimmed == *=* ]] || continue
+    k=${trimmed%%=*}; v=${trimmed#*=}
+    k=${k#"${k%%[![:space:]]*}"}; k=${k%"${k##*[![:space:]]}"}
+    [ "$k" = "$want_key" ] || continue
+    v=${v#"${v%%[![:space:]]*}"}; v=${v%"${v##*[![:space:]]}"}
+    if [[ $v == \'*\' ]]; then
+      v=${v#\'}; v=${v%\'}
+    elif [[ $v == \"*\" ]]; then
+      v=${v#\"}; v=${v%\"}; v=${v//\\\"/\"}; v=${v//\\\\/\\}
+    fi
+    printf '%s' "$v"; return 0
+  done < "$file"
+  return 1
+}
+
 template='open "warp://action/new_tab?path={uri}"'
 cfg="${HERDR_PLUGIN_CONFIG_DIR:-$HOME/.config/herdr/plugins/config/herdr-file-finder}/config.toml"
 if [ -f "$cfg" ]; then
-  custom=$(sed -nE "s/^[[:space:]]*open[[:space:]]*=[[:space:]]*'(.*)'[[:space:]]*\$/\\1/p" "$cfg" | head -1)
-  if [ -z "$custom" ]; then
-    custom=$(sed -nE 's/^[[:space:]]*open[[:space:]]*=[[:space:]]*"(.*)"[[:space:]]*$/\1/p' "$cfg" | head -1)
-    # Unescape TOML basic-string escapes (\" then \\, in that order).
-    custom=${custom//\\\"/\"}
-    custom=${custom//\\\\/\\}
-  fi
+  # Lowercased extension of the selected file (empty if it has none).
+  base=${selected##*/}
+  ext=""
+  case "$base" in *.*) ext=$(printf '%s' "${base##*.}" | tr '[:upper:]' '[:lower:]') ;; esac
+  custom=""
+  [ -n "$ext" ] && custom=$(cfg_lookup "$cfg" "open_by_ext" "$ext")
+  [ -n "$custom" ] || custom=$(cfg_lookup "$cfg" "" "open")
   [ -n "$custom" ] && template="$custom"
 fi
 

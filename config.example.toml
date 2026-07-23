@@ -34,3 +34,27 @@
 #
 # Just print the path (e.g. for debugging your template):
 #open = 'printf "%s\n" "{path}"; read -r _'
+
+# -----------------------------------------------------------------------------
+# Per-extension open actions (optional)
+# -----------------------------------------------------------------------------
+# Override the open action for specific file extensions. The key is the
+# lowercased extension WITHOUT the dot; its value is a command template using
+# the same placeholders as `open`. The most specific match wins: an extension
+# listed here beats the top-level `open`, which is the fallback for everything
+# else. Extensions not listed fall through to `open`.
+#
+#[open_by_ext]
+# HTML → default browser (macOS `open` routes .html to the default browser;
+# use `open -a "Google Chrome" "{path}"` to force a specific one):
+#html = 'open "{path}"'
+#htm  = 'open "{path}"'
+#
+# PDFs / images → macOS default app:
+#pdf = 'open "{path}"'
+#png = 'open "{path}"'
+#jpg = 'open "{path}"'
+#
+# Source files → VS Code:
+#ts = 'code "{path}"'
+#py = 'code "{path}"'

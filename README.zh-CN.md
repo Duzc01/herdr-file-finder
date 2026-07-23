@@ -106,6 +106,25 @@ open = 'open "{path}"'
 推荐用 TOML 单引号字面字符串（模板本身含双引号，省去转义）；双引号写法
 （`\"` 转义）也支持。
 
+### 按文件类型打开
+
+想让某些扩展名用不同方式打开，加一个 `[open_by_ext]` 表。键是小写扩展名
+（不带点），值是用同样占位符的模板。最具体的匹配优先——列出的扩展名优先于
+顶层的 `open`，未列出的扩展名一律回落到 `open`：
+
+```toml
+open = 'open "warp://action/new_tab?path={uri}"'   # 其他类型的回落方式
+
+[open_by_ext]
+html = 'open "{path}"'          # → 默认浏览器（macOS 的 open 会用默认浏览器打开 .html）
+htm  = 'open "{path}"'
+pdf  = 'open "{path}"'          # → macOS 默认应用
+ts   = 'code "{path}"'          # → VS Code
+```
+
+想强制用某个浏览器可写 `open -a "Google Chrome" "{path}"`。扩展名匹配不区分
+大小写（`.HTML` 命中 `html`）。
+
 ### 其他可调项（改 `src/`）
 
 - **弹窗尺寸**：`src/open-file-finder.sh` 里的 `--width 70% --height 60%`

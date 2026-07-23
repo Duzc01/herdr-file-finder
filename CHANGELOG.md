@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Per-extension open actions via an `[open_by_ext]` config table — open each
+  file type with a different command (e.g. `.html` in the browser). Falls back
+  to the top-level `open` template for unlisted extensions; matching is
+  case-insensitive.
+
 ## [0.1.0] - 2026-07-23
 
 ### Added

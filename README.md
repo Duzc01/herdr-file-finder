@@ -112,6 +112,26 @@ open = 'open "{path}"'
 TOML single-quoted literal strings are recommended (templates contain double
 quotes themselves); double-quoted form with `\"` escapes also works.
 
+### Open by file type
+
+To open certain extensions differently, add an `[open_by_ext]` table. Keys are
+lowercased extensions (no dot); values are templates using the same
+placeholders. The most specific match wins — a listed extension beats the
+top-level `open`, which stays the fallback for everything else:
+
+```toml
+open = 'open "warp://action/new_tab?path={uri}"'   # fallback for other types
+
+[open_by_ext]
+html = 'open "{path}"'          # → default browser (macOS routes .html there)
+htm  = 'open "{path}"'
+pdf  = 'open "{path}"'          # → macOS default app
+ts   = 'code "{path}"'          # → VS Code
+```
+
+Use `open -a "Google Chrome" "{path}"` to force a specific browser. Extension
+matching is case-insensitive (`.HTML` matches `html`).
+
 ### Other tweaks (edit `src/`)
 
 - **Popup size**: `--width 70% --height 60%` in `src/open-file-finder.sh`
